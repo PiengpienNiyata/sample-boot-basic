@@ -17,11 +17,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.deser.std.CollectionDeserializer;
 
+import th.mfu.domain.Customer;
+import th.mfu.dto.CustomerDTO;
+import th.mfu.dto.mapper.CustomerMapper;
+import th.mfu.repository.CustomerRepository;
+
 @RestController
 public class CustomerController {
 
     @Autowired
     private CustomerRepository custRepo;
+
+    @Autowired
+    CustomerMapper custMapper;
 
     // GET for a customer
     @GetMapping("/customers/{id}")
@@ -41,8 +49,10 @@ public class CustomerController {
 
     // POST for creating a customer
     @PostMapping("/customers")
-    public ResponseEntity<String> createCustomer(@RequestBody Customer customer){
-        custRepo.save(customer);
+    public ResponseEntity<String> createCustomer(@RequestBody CustomerDTO customer){
+        Customer newCust = new Customer();
+        custMapper.updateCustomerFromDto(customer, newCust);
+        custRepo.save(newCust);
         return new ResponseEntity<String>("Customer created", HttpStatus.CREATED);
     }
 
